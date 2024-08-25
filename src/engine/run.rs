@@ -1,6 +1,6 @@
-
-use std::{ f32::consts::E, process::Command };
-
+use std::process::{Command, exit};
+use crate::engine::mac::mac_open_modify_config;
+use crate::engine::win::win_start_ssh_agent;
 
 pub fn load_ssh_key(key: &str) {
     println!("Loading ssh key {}", key);
@@ -32,13 +32,24 @@ fn clear_ssh_keys() -> bool {
     }
 }
 pub fn add_ssh_key(key: &str) {
-    let eval_output = Command::new("eval").arg("$(ssh-agent -s)").output();
+    let config_data = format!("\nHost github.com\n\tAddKeysToAgent yes\n\tIdentityFile {}\n", key);
+    let mut eval_output= Command::new("eval").arg("$(ssh-agent -s)").output();
+
+    if cfg!(windows) {
+        eval_output = win_start_ssh_agent();
+    }
+
     match eval_output {
         Ok(_) => {
-           load_ssh_key(key)
+            let data = config_data.as_bytes();
+            if cfg!(macos) {
+                let file = mac_open_modify_config(data);
+            }
+            load_ssh_key(key)
         }
         Err(_) => {
             println!("Failed to start ssh-agent");
+            exit(1)
         }
     }
 }
