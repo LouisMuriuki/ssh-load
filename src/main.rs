@@ -1,5 +1,3 @@
-use core::slice;
-
 pub mod engine;
 
 use std::{ env, process::exit };
