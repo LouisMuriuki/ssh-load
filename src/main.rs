@@ -1,3 +1,7 @@
+
+//! # SSH-LOAD
+//!
+//! `SSH-LOAD` is a binary tool wriiten in rust to simplify the processs of adding, chaging or removing ssh keys from your local machine
 pub mod engine;
 
 use std::{ env, process::exit };
@@ -9,7 +13,6 @@ fn main() {
     let add_string = "--add";
 
     ///extract the ssh-string
-
     let args = env::args().collect::<Vec<String>>();
     let ssh_string = env::args().nth(3).unwrap();
     let load = env::args().any(|x| x == load_string);
