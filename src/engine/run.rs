@@ -3,6 +3,12 @@ use std::process::{ Command, exit };
 use crate::engine::unix::{ open_and_modify_config_file, super_user_do };
 use crate::engine::win::win_start_ssh_agent;
 
+/// Loads an SSH key into the SSH agent.
+/// 
+/// Attempts to load the key, using sudo if necessary.
+///
+/// # Arguments
+/// * `key` - Path to the SSH key file.
 pub fn load_ssh_key(key: &str) {
     println!("Loading ssh key {}", key);
     let done = clear_ssh_keys();
@@ -36,6 +42,13 @@ pub fn load_ssh_key(key: &str) {
     }
 }
 
+/// Deletes a specific SSH key from the SSH agent.
+///
+/// # Arguments
+/// * `key` - Path to the SSH key file to be deleted.
+///
+/// # Returns
+/// `true` if deletion was successful, `false` otherwise.
 pub fn delete_ssh_key(key: &str) -> bool {
     let output = Command::new("ssh-add").arg("-D").arg(key).output();
     match output {
@@ -65,6 +78,12 @@ fn clear_ssh_keys() -> bool {
     }
 }
 
+/// Adds an SSH key to the agent and updates the SSH config file.
+///
+/// Handles different behaviors for Unix and Windows systems.
+///
+/// # Arguments
+/// * `key` - Path to the SSH key file to be added.
 pub fn add_ssh_key(key: &str) {
     let config_data = format!("\nHost github.com\n\tAddKeysToAgent yes\n\tIdentityFile {}\n", key);
     let mut eval_output = Command::new("eval").arg("$(ssh-agent -s)").output();
@@ -119,8 +138,6 @@ pub fn add_ssh_key(key: &str) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::process::Command;
-    use std::io;
     use std::fs;
     use tempfile::tempdir;
 

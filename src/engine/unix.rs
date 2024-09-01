@@ -1,5 +1,9 @@
 use std::{ fs::OpenOptions, io::{ Error, Write }, process::Command };
 
+/// Attempts to enable super user mode on Unix systems.
+///
+/// # Returns
+/// `Ok(())` if successful, `Err` with the error otherwise.
 pub fn super_user_do() -> Result<(), Error> {
     if cfg!(unix) {
         let output = Command::new("sudo").arg("-s").arg("-H").output();
@@ -19,6 +23,13 @@ pub fn super_user_do() -> Result<(), Error> {
     }
 }
 
+/// Opens the SSH config file and appends data to it.
+///
+/// # Arguments
+/// * `data` - The byte slice to be written to the file.
+///
+/// # Returns
+/// `Ok(())` if successful, `Err` with the error otherwise.
 pub fn open_and_modify_config_file(data: &[u8]) -> Result<(), Error> {
     let home_dir = dirs::home_dir().expect("Failed to get home directory");
     let ssh_config_path = home_dir.join(".ssh/config");

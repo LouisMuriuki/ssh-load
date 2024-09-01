@@ -8,6 +8,8 @@ fn main() {
     let delete_string = "--delete";
     let add_string = "--add";
 
+    ///extract the ssh-string
+
     let args = env::args().collect::<Vec<String>>();
     let ssh_string = env::args().nth(3).unwrap();
     let load = env::args().any(|x| x == load_string);
@@ -18,17 +20,15 @@ fn main() {
     if args.len() < 2 {
         println!("Usage: {} <command> [--load <ssh_key>]", args[0]);
         exit(0);
-    }
-    if load {
+    } else if load {
         load_ssh_key(&ssh_string);
-    }
-    if add {
+    } else if add {
         add_ssh_key(&ssh_string);
-    }
-    if delete {
+    } else if delete {
         delete_ssh_key(&ssh_string);
+    } else {
+        println!("Something is wrong");
+        exit(1);
     }
     print!("{:?}", args);
 }
-
-
