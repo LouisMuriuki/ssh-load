@@ -15,6 +15,7 @@ pub fn win_start_ssh_agent() -> Result<Output, io::Error> {
 
     match output_set_service {
         Ok(output) => {
+            println!("{:?}", output);
             let output_start_service = Command::new("powershell")
                 .arg("--Command")
                 .arg("Start-Service ssh-agent")
